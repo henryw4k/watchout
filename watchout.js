@@ -15,10 +15,19 @@ var svg = d3.select("body").append("svg")
 //     .attr("r", 5)
 //     .attr("style", "fill: green");
 var enemyArr = [];
+
+var generateX = function() {
+  return Math.random() * 650;
+};
+
+var generateY = function() {
+  return Math.random() * 400;
+};
+
 for( var i = 0; i < nEnemies; i++ ){
   enemyArr.push({name: i ,
-                    x: Math.random() * 650,
-                    y: Math.random() * 400
+                    x: generateX(),
+                    y: generateY()
                 });
 }
 
@@ -30,15 +39,31 @@ var circle = svg.selectAll('circle')
     console.log(d);
     return d.x;
   })
-  .attr('cy', function(d) {
+  .attr('cy',function(d) {
     return d.y;
   })
-  .attr('r', function(d) {
-    return 5;
+  .attr('r', 5)
+  .attr('style', "fill: black");
+
+setInterval(function(){
+  // generate new x y cordinates for each enemy.
+  for(var j = 0; j < enemyArr.length; j++){
+    enemyArr[j].x = generateX();
+    enemyArr[j].y = generateY();
+  }
+  // update enemy on screen with new x y coordinate
+  circle.data(enemyArr)
+  .transition()
+    .duration(750)
+  .attr('cx', function(d) {
+    //console.log(d);
+    return d.x;
   })
-  .attr('style', function(d) {
-    return "fill: black";
-  })
+  .attr('cy',function(d) {
+    return d.y;
+  });
+  // transition
+}, 1000);
 
 
 
