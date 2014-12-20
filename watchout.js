@@ -31,19 +31,19 @@ for( var i = 0; i < nEnemies; i++ ){
                 });
 }
 
-var circle = svg.selectAll('circle')
+var enemyCircle = svg.selectAll('.enemy')
   .data(enemyArr);
 
-  circle.enter().append("circle")
+  enemyCircle.enter().append("circle")
   .attr('cx', function(d) {
-    console.log(d);
     return d.x;
   })
   .attr('cy',function(d) {
     return d.y;
   })
   .attr('r', 5)
-  .attr('style', "fill: black");
+  .attr('style', "fill: black")
+  .attr('class', "enemy");
 
 setInterval(function(){
   // generate new x y cordinates for each enemy.
@@ -52,7 +52,7 @@ setInterval(function(){
     enemyArr[j].y = generateY();
   }
   // update enemy on screen with new x y coordinate
-  circle.data(enemyArr)
+  enemyCircle.data(enemyArr)
   .transition()
     .duration(750)
   .attr('cx', function(d) {
@@ -65,6 +65,47 @@ setInterval(function(){
   // transition
 }, 1000);
 
+var player = {name: "player",
+                 x: 350,
+                 y: 225
+             };
 
+var playerCircle = svg.selectAll('.player')
+.data([player]);
+playerCircle.enter().append("circle")
+  .attr('cx', function(d) {
+    //console.log(d);
+    return d.x;
+  })
+  .attr('cy',function(d) {
+    return d.y;
+  })
+  .attr('r', 20)
+  .attr('style', "fill: orange")
+  .attr('class', "player");
+
+var dragMove = function() {
+  moveRelative(d3.event.dx, d3.event.dy);
+  console.log(d3.event.dx, d3.event.dy);
+};
+
+var moveRelative = function(dx, dy) {
+  console.log('moving');
+  playerCircle
+  .attr('cx', function(d) {
+    //console.log(d);
+    return dx;
+  })
+  .attr('cy',function(d) {
+    return dy;
+  })
+  .attr('r', 20)
+  .attr('style', "fill: orange")
+  .attr('class', "player");
+
+};
+
+var drag = d3.behavior.drag().on("drag", dragMove);
+svg.selectAll('.player').call(drag);
 
 
