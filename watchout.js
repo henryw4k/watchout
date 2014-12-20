@@ -67,7 +67,8 @@ setInterval(function(){
 
 var player = {name: "player",
                  x: 350,
-                 y: 225
+                 y: 225,
+                 r: 20
              };
 
 var playerCircle = svg.selectAll('.player')
@@ -80,7 +81,9 @@ playerCircle.enter().append("circle")
   .attr('cy',function(d) {
     return d.y;
   })
-  .attr('r', 20)
+  .attr('r', function(d) {
+    return d.r;
+  })
   .attr('style', "fill: orange")
   .attr('class', "player");
 
@@ -93,11 +96,25 @@ var moveRelative = function(dx, dy) {
   console.log('moving');
   playerCircle
   .attr('cx', function(d) {
-    d.x = d.x + dx
+    var newX = d.x + dx;
+    if(newX < d.r) {
+      d.x = d.r;
+    } else if (newX > 700 - d.r){
+      d.x = 700 - d.r;
+    } else {
+      d.x = newX;
+    }
     return d.x;
   })
   .attr('cy',function(d) {
-    d.y = d.y + dy;
+    var newY = d.y + dy;
+    if(newY < d.r) {
+      d.y = d.r;
+    } else if (newY> 450 - d.r){
+      d.y = 450 - d.r;
+    } else {
+      d.y = newY;
+    }
     return d.y;
   });
 };
