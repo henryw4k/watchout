@@ -27,7 +27,8 @@ var generateY = function() {
 for( var i = 0; i < nEnemies; i++ ){
   enemyArr.push({name: i ,
                     x: generateX(),
-                    y: generateY()
+                    y: generateY(),
+                    r: 5
                 });
 }
 
@@ -41,29 +42,12 @@ var enemyCircle = svg.selectAll('.enemy')
   .attr('cy',function(d) {
     return d.y;
   })
-  .attr('r', 5)
+  .attr('r', function(d) {
+    return d.r;
+  })
   .attr('style', "fill: black")
   .attr('class', "enemy");
 
-setInterval(function(){
-  // generate new x y cordinates for each enemy.
-  for(var j = 0; j < enemyArr.length; j++){
-    enemyArr[j].x = generateX();
-    enemyArr[j].y = generateY();
-  }
-  // update enemy on screen with new x y coordinate
-  enemyCircle.data(enemyArr)
-  .transition()
-    .duration(750)
-  .attr('cx', function(d) {
-    //console.log(d);
-    return d.x;
-  })
-  .attr('cy',function(d) {
-    return d.y;
-  });
-  // transition
-}, 1000);
 
 var player = {name: "player",
                  x: 350,
@@ -89,11 +73,9 @@ playerCircle.enter().append("circle")
 
 var dragMove = function() {
   moveRelative(d3.event.dx, d3.event.dy);
-  console.log(d3.event.dx, d3.event.dy);
 };
 
 var moveRelative = function(dx, dy) {
-  console.log('moving');
   playerCircle
   .attr('cx', function(d) {
     var newX = d.x + dx;
@@ -122,4 +104,38 @@ var moveRelative = function(dx, dy) {
 var drag = d3.behavior.drag().on("drag", dragMove);
 svg.selectAll('.player').call(drag);
 
+setInterval(function(){
+  // generate new x y cordinates for each enemy.
+  for(var j = 0; j < enemyArr.length; j++){
+    enemyArr[j].x = generateX();
+    enemyArr[j].y = generateY();
+  }
+  // update enemy on screen with new x y coordinate
+  enemyCircle.data(enemyArr)
+  .transition()
+    .duration(750)
+  .attr('cx', function(d) {
+    //console.log(d);
+    return d.x;
+  })
+  .attr('cy',function(d) {
+    return d.y;
+  }).tween(".enemy", function() {
+    return function(t) {
+      // console.log(d3.selectAll('.enemy'));
+      // console.log(this);
+      checkCollision(d3.select(this), d3.select('.player'));
+    };
+  });
+}, 1000);
 
+var checkCollision = function(enemy, player) {
+  var totalRadius = parseInt(enemy.attr('r')) + parseInt(player.attr('r'));
+  var diffX = parseInt(enemy.attr('cx')) - parseInt(player.attr('cx'));
+  var diffY = parseInt(enemy.attr('cy')) - parseInt(player.attr('cy'));
+  var distance = Math.pow(Math.pow(diffX, 2) + Math.pow(diffY, 2), 0.5);
+  if(distance < totalRadius) {
+    console.log('true');
+    return true;
+  }
+};
