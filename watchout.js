@@ -93,16 +93,13 @@ var moveRelative = function(dx, dy) {
   console.log('moving');
   playerCircle
   .attr('cx', function(d) {
-    //console.log(d);
-    return dx;
+    d.x = d.x + dx
+    return d.x;
   })
   .attr('cy',function(d) {
-    return dy;
-  })
-  .attr('r', 20)
-  .attr('style', "fill: orange")
-  .attr('class', "player");
-
+    d.y = d.y + dy;
+    return d.y;
+  });
 };
 
 var drag = d3.behavior.drag().on("drag", dragMove);
