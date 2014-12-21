@@ -4,6 +4,10 @@ var width    = 700,
     height   = 450,
     nEnemies = 30;
 
+var score = 0;
+var highScore = 0;
+var collisionCount = 0;
+
 var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
@@ -28,8 +32,10 @@ for( var i = 0; i < nEnemies; i++ ){
   enemyArr.push({name: i ,
                     x: generateX(),
                     y: generateY(),
-                    r: 5
+                    r: 5,
+
                 });
+  //enemyArr['flag']= false;
 }
 
 var enemyCircle = svg.selectAll('.enemy')
@@ -45,6 +51,7 @@ var enemyCircle = svg.selectAll('.enemy')
   .attr('r', function(d) {
     return d.r;
   })
+  .attr('z', "0")
   .attr('style', "fill: black")
   .attr('class', "enemy");
 
@@ -104,16 +111,16 @@ var moveRelative = function(dx, dy) {
 var drag = d3.behavior.drag().on("drag", dragMove);
 svg.selectAll('.player').call(drag);
 
-setInterval(function(){
+setInterval(function() {
   // generate new x y cordinates for each enemy.
   for(var j = 0; j < enemyArr.length; j++){
     enemyArr[j].x = generateX();
     enemyArr[j].y = generateY();
   }
-  // update enemy on screen with new x y coordinate
+  // update enemy on screen with new x y
   enemyCircle.data(enemyArr)
   .transition()
-    .duration(750)
+    .duration(1000)
   .attr('cx', function(d) {
     //console.log(d);
     return d.x;
@@ -122,8 +129,6 @@ setInterval(function(){
     return d.y;
   }).tween(".enemy", function() {
     return function(t) {
-      // console.log(d3.selectAll('.enemy'));
-      // console.log(this);
       checkCollision(d3.select(this), d3.select('.player'));
     };
   });
@@ -134,8 +139,26 @@ var checkCollision = function(enemy, player) {
   var diffX = parseInt(enemy.attr('cx')) - parseInt(player.attr('cx'));
   var diffY = parseInt(enemy.attr('cy')) - parseInt(player.attr('cy'));
   var distance = Math.pow(Math.pow(diffX, 2) + Math.pow(diffY, 2), 0.5);
-  if(distance < totalRadius) {
-    console.log('true');
-    return true;
+  var flag = !!parseInt(enemy.attr('z'));
+  if(distance < totalRadius && !flag) {
+      enemy.attr('z', '1');
+      score = 0;
+      collisionCount++;
   }
+  if(distance > totalRadius) {
+     enemy.attr('z', '0');
+  }
+};
+
+var scoreTicker = function(){
+  score = score + 1;
+  highScore = Math.max(score, highScore);
+  updateScore();
+};
+
+setInterval(scoreTicker, 100);
+var updateScore = function() {
+  d3.select('.scoreboard .current span').text(score);
+  d3.select('.scoreboard .high span').text(highScore);
+  d3.select('.scoreboard .collisions span').text(collisionCount);
 };
