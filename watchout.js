@@ -2,7 +2,7 @@
 
 var width    = 700,
     height   = 450,
-    nEnemies = 30;
+    nEnemies = 10;
 
 var score = 0;
 var highScore = 0;
@@ -32,7 +32,7 @@ for( var i = 0; i < nEnemies; i++ ){
   enemyArr.push({name: i ,
                     x: generateX(),
                     y: generateY(),
-                    r: 5,
+                    r: 10,
 
                 });
   //enemyArr['flag']= false;
@@ -52,7 +52,7 @@ var enemyCircle = svg.selectAll('.enemy')
     return d.r;
   })
   .attr('z', "0")
-  .attr('style', "fill: black")
+  // .attr('style', "fill: black")
   .attr('class', "enemy");
 
 
